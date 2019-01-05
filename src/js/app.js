@@ -4,6 +4,7 @@ App = {
   contracts: {},
   account: '0x0',
   hasVoted: false,
+  balance: 0,
 
   init: function() {
     return App.initWeb3();
@@ -78,8 +79,17 @@ App = {
       if (err === null) {
         App.account = account;
         $("#accountAddress").html("Your Account: " + account);
+        $("#amount").value("some shit");
+        
       }
     });
+
+    web3.eth.getBalance(App.account,function(err,balance){
+      App.balance = balance;
+      $("#accountBalance").html("balance : "+ balance);
+    });
+
+
 
     // Load contract data
     // App.contracts.Election.deployed().then(function(instance) {
@@ -160,11 +170,32 @@ App = {
       alert('error' + err);
     });
 
+  },
+
+  verify : function(){
+
+    alert('verify!!');
   }
 };
+
+
+  
   
 $(function() {
   $(window).load(function() {
     App.init();
   });
 });
+
+
+// $('table tr').on('click', 'td', function () {
+//   var a=10;
+
+//    var tableData = $(this).children("td").map(function() {
+//         return $(this).text();
+//     }).get();
+
+//     alert("Your data is: " + $.trim(tableData[0]) + " , " + $.trim(tableData[1]) + " , " + $.trim(tableData[2]));
+
+//    window.location.href = "./edit_contract.html?amount="+a;
+// });

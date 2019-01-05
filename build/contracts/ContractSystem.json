@@ -7712,12 +7712,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0xCCb2d476Dfdf332b520445594fec4979c1FAa1ed",
-      "transactionHash": "0x170c8cf2e43d5963fc5a013f65e9b7a5ab27e64863ff457a4a7861ed5aff3532"
+      "address": "0x2B2Da3062Be4928108EcadBF8945fBDED4466aB6",
+      "transactionHash": "0x82d2dd51b0ce4c0ecfe9003d461725457c56c058c41f7ae2b68ec470bbf3ea18"
     }
   },
   "schemaVersion": "3.0.1",
-  "updatedAt": "2019-01-05T17:04:24.630Z",
+  "updatedAt": "2019-01-05T22:56:17.189Z",
   "devdoc": {
     "methods": {}
   },
