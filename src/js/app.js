@@ -2,9 +2,10 @@
 App = {
   web3Provider: null,
   contracts: {},
-  account: '0x0',
+  account: '0xEa1F84CE8643B5DfDA6DAece2680ED7AcF92207e',
   hasVoted: false,
   balance: 0,
+  userName: null,
 
   init: function() {
     return App.initWeb3();
@@ -25,25 +26,10 @@ App = {
   },
 
   initContract: function() {
-    // $.getJSON("Election.json", function(election) {
-    //   // Instantiate a new truffle contract from the artifact
-    //   App.contracts.Election = TruffleContract(election);
-    //   // Connect provider to interact with contract
-    //   App.contracts.Election.setProvider(App.web3Provider);
-
-    //   App.listenForEvents();
-
-    //   return App.render();
-    // });
-
     $.getJSON("ContractSystem.json", function(system){
-
         App.contracts.ContractSystem = TruffleContract(system);
-
         App.contracts.ContractSystem.setProvider(App.web3Provider);
-
         App.listenForEvents();
-
         return App.render();
     });
   },
@@ -60,9 +46,46 @@ App = {
       }).watch(function(error, event) {
         console.log("event triggered", event)
         // Reload when a new vote is recorded
-        App.render();
+        // App.checkUser();
+        
       });
     });
+
+    // var name = $("#newName").val();
+    //   console.log(name);
+    // if(name!==""){
+    //   App.createUser(name);  
+    //   console.log("going to index");
+    //   setTimeout(function(){window.location.href="./index.html";},5000); 
+    // }
+    
+
+   
+
+  },
+
+  checkUser: function(){
+
+    console.log("starting checkUser");
+
+    App.contracts.ContractSystem.deployed().then(function(instance){
+      
+      return instance.users(App.account);
+
+    }).then(function(result){
+
+      App.userName=result[0];
+      if(App.userName === "" ){
+        console.log("going to auth"); 
+        window.location.href = "./auth.html";
+      }else{
+        $("#userName").html("Welcome "+ result);
+      }
+
+    });
+
+
+    App.render();
   },
 
   render: function() {
@@ -71,15 +94,12 @@ App = {
     // var content = $("#content");
     var label= $("#label");
 
-    // loader.show();
-    // content.hide();
 
     // Load account data
     web3.eth.getCoinbase(function(err, account) {
       if (err === null) {
         App.account = account;
         $("#accountAddress").html("Your Account: " + account);
-        $("#amount").value("some shit");
         
       }
     });
@@ -89,6 +109,27 @@ App = {
       $("#accountBalance").html("balance : "+ balance);
     });
 
+
+    console.log("loading all contracts");
+    App.contracts.ContractSystem.deployed().then(function(instance){
+
+     return UserContract.getAllContracts(App.account , instance);
+
+   }).then(function(result){
+      
+
+
+      if(window.location.href.includes("index.html")) {
+         App.checkUser();
+      }
+
+      console.log(result);
+    }).catch(function(err){
+      console.log(err);
+    });
+
+
+    //
 
 
     // Load contract data
@@ -175,15 +216,30 @@ App = {
   verify : function(){
 
     alert('verify!!');
+  },
+
+
+
+  createUser: function(name){
+    
+    App.contracts.ContractSystem.deployed().then(function(instance){
+
+      return instance.addUser(name,{from : App.account});
+    }).then(function(result){
+      alert('account created');
+    });
   }
 };
 
+
+//0xc9470f5d89cec1104dabd9af95c017f767db4bdd
 
   
   
 $(function() {
   $(window).load(function() {
     App.init();
+
   });
 });
 

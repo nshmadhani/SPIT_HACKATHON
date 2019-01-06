@@ -38,6 +38,7 @@
 <div class='container'>
   <p id="accountAddress" class="text-center"></p><br>
   <p id="accountBalance" class="text-center"></p><br>
+  <p id="user" class="text-center">WELCOME</p><br>
   <h1>Your Contracts</h1> 
  <table class="table table-hover" id="myTable">
     <thead>
@@ -80,10 +81,22 @@
     <script src="js/bootstrap.min.js"></script>
     <script src="js/web3.min.js"></script>
     <script src="js/truffle-contract.js"></script>
+    <script src="js/UserContract.js"></script>
     <script src="js/app.js"></script>
 
     <script type="text/javascript">
-    
+
+    $(document).ready(function(){
+      
+            // App.checkUser();
+
+    });
+
+    function getQueryStringValue (key) {  
+  return decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent(key).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));  
+} 
+
+
     $("tr").click(function() {
     var tableData = $(this).children("td").map(function() {
         return $(this).text();
@@ -102,5 +115,9 @@
         $('#myTable').append('<tr><td>my data</td><td>more data</td></tr>');
      });
     </script>
-</body>
+
+   
+
+  </body>
 </html>
+
