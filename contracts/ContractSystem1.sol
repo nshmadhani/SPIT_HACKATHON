@@ -1,4 +1,4 @@
-pragma solidity ^0.4.22;
+pragma solidity ^0.4.2;
 contract ContractSystem {
     
     
@@ -6,15 +6,19 @@ contract ContractSystem {
     event loga(address indexed value1);
     event logi(uint indexed value1);
     
+    
+    
+    
+    
     enum State{Completed,Disputed,Ongoing,Verified}
     
-    uint256 dummyValue;
-    address toCoWllet;
-    address fromCoWallet;
-    
-    
     uint256 public constractIDCount = 0;
-    
+
+    struct User {
+        string name;
+        address  wallet_address;
+    }
+
     struct UserContract {
         uint256 id;
         string terms;
@@ -24,33 +28,31 @@ contract ContractSystem {
         User toParty;
         bool fromPartyVerified;
         bool toPartyVerified;
-        uint status;
+        State status;
     }
-    
-    struct User {
-        string name;
-        address wallet_address;
-    }
+
     
 
     
-    mapping(uint => UserContract) allContracts;
+    mapping(uint => UserContract)  allContracts;
     
     mapping(address => User) public users;
     
+    mapping(address => uint256) public balances;
     
+    
+
+    
+
     //given user wallet fetch UserContracts
     
+
     
     
     
-    function createUserContract(string memory _terms, uint _amount,address _toPartyAdress) public payable {
+    function createUserContract(string memory _terms, uint _amount,address   _toPartyAdress) public  {
         
         require(msg.sender != _toPartyAdress);
-        
-        dummyValue = msg.value;
-        fromCoWallet = msg.sender;
-        toCoWllet = _toPartyAdress;
         
         constractIDCount++;
         allContracts[constractIDCount] =  UserContract(constractIDCount,
@@ -61,14 +63,14 @@ contract ContractSystem {
                                                      users[_toPartyAdress],
                                                      false,
                                                      false,
-                                                     1);
+                                                     State.Ongoing);
     }
     
     function addUser(string memory _name) public  {
         users[msg.sender] = User(_name,msg.sender);
     }
    
-    function getUserContracts() public view returns(uint[] memory) {
+    function getUserContracts() public  returns(uint[] memory) {
         User memory user = users[msg.sender];
         uint[] memory thisUsersContracts = new uint[](constractIDCount);
         uint k = 0;
@@ -78,6 +80,7 @@ contract ContractSystem {
                 thisUsersContracts[k]  = i;
                 k++;
             }
+            
         }
         return thisUsersContracts;
     }
@@ -92,27 +95,23 @@ contract ContractSystem {
         }
         
         if(_userContract.fromPartyVerified && _userContract.toPartyVerified) {
-            _userContract.status = 2;
+            _userContract.status = State.Verified;
         }
         
     }
     
     
-    modifier bothVerified(uint _contractID) {
-        require(allContracts[_contractID].status == 2, "Both not verified");
-        _;
-    }
+    
     
     
     function JobCompleted(uint _contractID) public {
-        //require(allContracts[_contractID].status == State.Verified);
         UserContract storage _userContract = allContracts[_contractID];
-        require(_userContract.status == 2, "Both not verified");
-        require(msg.sender == _userContract.fromParty.wallet_address,"not Address");
-         _userContract.status = 3;
-        //address toWallet = _userContract.toParty.wallet_address;
-        // toWallet.transfer(msg.value);
-        toCoWllet.transfer(dummyValue);
+        require(msg.sender == _userContract.fromParty.wallet_address);
+        require(State.Verified == _userContract.status);
+        _userContract.status = State.Completed;
+        balances[msg.sender]++;
+        _userContract.toParty.wallet_address.transfer(_userContract.amount);
+        
     }
     
     
@@ -122,6 +121,7 @@ contract ContractSystem {
     //Contracts Done
     
     //Active Disputes
+
 
     /***************************CONTRACT GETTER***********************/
     
@@ -141,7 +141,14 @@ contract ContractSystem {
         return allContracts[_contractID].fromParty.name;
     }
     function getContractStatus(uint _contractID) public returns(uint){
-        return allContracts[_contractID].status; 
+        State a  = allContracts[_contractID].status;
+        if(a == State.Verified) {
+            return 2;
+        } else if(a == State.Completed) {
+            return 3;
+        } else if(a == State.Disputed){
+            return 4;
+        } else return 1;//Ongoing 
     }
     function getClient(uint _contractID) public returns(string) {
         
@@ -152,5 +159,4 @@ contract ContractSystem {
             return usc.toParty.name;
         } else return "";
     }
-
 }

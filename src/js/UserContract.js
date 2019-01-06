@@ -1,8 +1,4 @@
 class UserContract {
-
-
-
-    
     static getAllContracts(userAddress,contractInstance) {
         return new Promise(function(res,rej) {
             
@@ -27,20 +23,17 @@ class UserContract {
                 })
         });
     }
-
     static async getContract(contractInstance,contractID)   {
-        
         var amount = (await  contractInstance.getContractAmount.call(contractID)).toNumber();
         var terms = await   contractInstance.getContractTerms.call(contractID);
         var status = (await  contractInstance.getContractStatus.call(contractID)).toNumber();
         var client = await  contractInstance.getClient.call(contractID);
-
         return  {
             amount:amount,
             terms:terms,
             status:status,
             client:client
         }            
-
     }
+    
 }
