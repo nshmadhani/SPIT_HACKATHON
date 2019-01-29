@@ -22,36 +22,17 @@
 </head>
 <body>
 
-<nav class="navbar navbar-default">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <a class="navbar-brand">Contracts</a>
-    </div>
-    <ul class="nav navbar-nav">
-      <li ><a href="index.html">Home</a></li>
-      <li class="active"><a href="./create_contract.html">Create contract</a></li>
-      
-    </ul>
-  </div>
-</nav>
 
 <div class="container">
 
 	<p id="accountAddress" class="text-center"></p>
 
-	<form onsubmit="App.makeContract()">
+	<form>
 
-		Address of receiver:<br>
-		<input name="to" type="text" placeholder="to" id="to" size="80"><br>
+		create new user:<br>
+		<input name="user name" type="text" value="to" id="newName" size="80"><br>
 
-		terms of contract:<br>
-		<textarea name="terms" rows="10" cols="80" id="terms"></textarea> <br>	
-
-		amount :<br>
-		<input  name="amount" type="text" placeholder="amount" id="amount" size="80"><br>
-
-		<br>
-		<button class="btn btn-primary" id='submit'>create</button>
+		<button class="btn btn-primary" id='createUserbtn'>create</button>
 
 	</form>
 	
@@ -64,8 +45,22 @@
     <script src="js/bootstrap.min.js"></script>
     <script src="js/web3.min.js"></script>
     <script src="js/truffle-contract.js"></script>
-     <script src="js/UserContract.js"></script>
     <script src="js/app.js"></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+
+
+
+    });  
+
+  $("#createUserbtn").click(function(){
+    var name = $("#newName").val();
+    App.createUser(name);
+
+    window.location.href="./index.html";
+  })
+
+</script>
 
 </body>
 </html>

@@ -143,6 +143,12 @@ contract ContractSystem {
     function getContractStatus(uint _contractID) public returns(uint){
         return allContracts[_contractID].status; 
     }
+    function getContractFromPartyVerified(uint _contractID) public returns(bool){
+        return allContracts[_contractID].fromPartyVerified; 
+    }
+    function getContractToPartyVerified(uint _contractID) public returns(bool){
+        return allContracts[_contractID].toPartyVerified; 
+    }
     function getClient(uint _contractID) public returns(string) {
         
         UserContract usc = allContracts[_contractID]; 
@@ -152,5 +158,7 @@ contract ContractSystem {
             return usc.toParty.name;
         } else return "";
     }
+
+        
 
 }

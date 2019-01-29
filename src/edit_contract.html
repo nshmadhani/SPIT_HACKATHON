@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+
+		<!-- Latest compiled and minified CSS -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Pete's Pet Shop</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand">Contracts</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li ><a href="index.html">Home</a></li>
+      <li class="active"><a href="./create_contract.html">Create contract</a></li>
+      
+    </ul>
+  </div>
+</nav>
+
+<div class="container">
+
+	<p id="accountAddress" class="text-center"></p>
+
+  <p id="contractID" class="text-center"></p>
+
+
+		Address of receiver:<br>
+    <input name="to" type="text" value="to" id="to" size="80"><br>
+    
+		terms of contract:<br>
+    <textarea name="terms" rows="10" cols="80" id="terms"></textarea> <br>	
+    
+    amount :<br>
+    <input  name="amount" type="text" value="amount" id="amount" size="80"><br>
+    
+    <p id="verifyP"></p>
+
+
+		<br>
+    <button class="btn btn-primary" id='submit'>Save</button>
+    <br>
+    <br>
+    <button class="btn btn-primary" id ="verify" >Verify</button>
+    <br>
+    <button class="btn btn-primary" id ="complete" disabled>Complete</button>
+  
+	
+
+</div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/web3.min.js"></script>
+    <script src="js/truffle-contract.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/UserContract.js"></script>
+
+    <script type="text/javascript">
+      
+      var contractID;
+
+
+
+     function getTheDeets() {
+      contractID=getQueryStringValue('contractID').toString();
+       
+       
+      App.contracts.ContractSystem.deployed().then(function(instance){
+        return UserContract.getContract(instance,contractID);
+      }).then(function(result){
+        
+        $("#to").val(result.client);
+        
+        $('#to').prop('disabled',true);
+
+        $("#terms").val(result.terms);
+        $("#amount").val(result.amount);
+
+
+        $("#verifyP").val(`From Party Verified:${result.fromPartyVerified} `);
+
+        isItTheOwner();
+
+      }).catch(function(err){
+        console.error(err);
+      });
+     }
+
+
+     $(function() {
+
+        $("#verify").click(verify);
+
+     });
+
+     function complete() {
+        App.contracts.ContractSystem.deployed().then(function(instance){
+          return instance.JobCompleted(contractID);
+        }).then(console.log).catch(function(err){
+          console.error(err);
+        });       
+     }
+
+
+     function isItTheOwner() {
+      App.contracts.ContractSystem.deployed().then(function(instance){
+        return instance.getContractFromPartyName.call(contractID);
+      }).then(function(result){
+        var client = $("#to").val();
+        console.log(result,client)
+        
+            //Owner
+            $("#complete").prop("disabled",result === client);
+        
+      }).catch(function(err){
+        console.error(err);
+      });       
+     }
+
+     function verify() {
+      App.contracts.ContractSystem.deployed().then(function(instance){
+        return instance.verifyUserContract(contractID);
+      }).then(function(result){
+        console.log(result);
+      }).catch(function(err){
+        console.error(err);
+      });       
+     }
+ 
+     
+     function getQueryStringValue (key) {  
+       return decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent(key).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));  
+     } 
+ 
+     </script>
+ 
+</body>
+</html>
